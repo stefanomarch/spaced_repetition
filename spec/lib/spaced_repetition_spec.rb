@@ -36,6 +36,8 @@ RSpec.describe SpacedRepetition do
     end
   end
 
+
+  # -------------- Spaced repetition when incorrect  BLACKOUT_RESPONSE(0) --------------
   describe 'SpacedRepetition#update_spaced_repetition when easiness factor is blackout' do
     context 'when the quality response is a complete blackout, it means that is the molst difficult' do
       before { flashcard.update_spaced_repetition(QualityResponse::BLACKOUT_RESPONSE) }
@@ -49,6 +51,7 @@ RSpec.describe SpacedRepetition do
       end
     end
   end
+  # -------------- Spaced repetition when incorrect  INCORRECT_HARD_RESPONSE(1) --------------
 
   describe 'SpacedRepetition#update_spaced_repetition' do
     context 'when the quality response is incorrect and hard' do
@@ -62,6 +65,7 @@ RSpec.describe SpacedRepetition do
       end
     end
   end
+  # -------------- Spaced repetition when incorrect  INCORRECT_EASY_RESPONSE(2) --------------
 
   describe 'SpacedRepetition#update_spaced_repetition' do
     context 'when the quality response is incorrect but seemed easy after review' do
@@ -76,7 +80,7 @@ RSpec.describe SpacedRepetition do
     end
   end
 
-  # -------------- Spaced repetition when correct answers DIFFICULT_RESPONSE --------------
+  # --------------Spaced repetition when correct answers DIFFICULT_RESPONSE(3) --------------
   describe 'SpacedRepetition#update_spaced_repetition' do
     context 'when the response is correct, with serious difficulty, for the first time' do
       before { flashcard.update_spaced_repetition(QualityResponse::DIFFICULT_RESPONSE) }
@@ -147,52 +151,194 @@ RSpec.describe SpacedRepetition do
       it 'increases the repetition number by 1' do
         expect(flashcard.repetition_number).to eq(4)
       end
-
-      describe 'SpacedRepetition#update_spaced_repetition' do
-        context 'when the response is correct, with serious difficulty, for the 5th time' do
-          before do
-            5.times { flashcard.update_spaced_repetition(QualityResponse::DIFFICULT_RESPONSE) }
-          end
-
-          it 'the interval blocks will remain the same of the previos time , you will repeat every 16 days' do
-            expect(flashcard.next_study_date).to be_within(16.days).of(Time.now)
-          end
-
-          it 'increases the repetition number by 1' do
-            expect(flashcard.repetition_number).to eq(5)
-          end
-        end
-      end
     end
 
-    context 'when the response is correct after hesitation' do
-      # Test for interval and easiness factor adjustments for a hesitated correct response
-    end
-
-    context 'when the response is perfect' do
-      # Test for interval and easiness factor adjustments for a perfect response
-    end
-
-    context 'with varying repetition numbers' do
-      context 'when the item is studied for the first time' do
-        # Test for interval after the first study session
+    context 'when the response is correct, with serious difficulty, for the 5th time' do
+      before do
+        5.times { flashcard.update_spaced_repetition(QualityResponse::DIFFICULT_RESPONSE) }
       end
 
-      context 'when the item is studied for the second time' do
-        # Test for interval after the second study session
+      it 'the interval blocks will remain the same of the previos time , you will repeat every 16 days' do
+        expect(flashcard.next_study_date).to be_within(16.days).of(Time.now)
       end
 
-      context 'when the item is reviewed for the third time and beyond' do
-        # Iterative tests for each subsequent review, asserting increased intervals based on the easiness factor
+      it 'increases the repetition number by 1' do
+        expect(flashcard.repetition_number).to eq(5)
       end
-    end
-
-    context 'when the easiness factor reaches the minimum threshold' do
-      # Test to ensure the easiness factor does not drop below the minimum threshold
-    end
-
-    context 'when incorrect responses follow correct responses' do
-      # Test for the effect of a mix of correct and incorrect responses on the easiness factor and interval
     end
   end
+
+  # -------------- Spaced repetition when correct answers HESITATION_RESPONSE(4) --------------
+  describe 'SpacedRepetition#update_spaced_repetition' do
+    context 'when the response is correct, with HESITATION_RESPONSE(4), for the first time' do
+      before { flashcard.update_spaced_repetition(QualityResponse::HESITATION_RESPONSE) }
+
+      it 'let you repeat the card 1 day later' do
+        expect(flashcard.next_study_date).to be_within(1.day).of(Time.now)
+      end
+
+      it 'increases the repetition number by 1' do
+        expect(flashcard.repetition_number).to eq(1)
+      end
+    end
+
+    context 'when the response is correct, with HESITATION_RESPONSE(2), for the second time' do
+      before do
+        2.times { flashcard.update_spaced_repetition(QualityResponse::HESITATION_RESPONSE) }
+      end
+
+      it 'let you repeat the card 4 days later' do
+        expect(flashcard.next_study_date).to be_within(4.days).of(Time.now)
+      end
+
+      it 'increases the repetition number by 1' do
+        expect(flashcard.repetition_number).to eq(2)
+      end
+    end
+
+    context 'when the response is correct, with HESITATION_RESPONSE(4), for the third time' do
+      before do
+        3.times { flashcard.update_spaced_repetition(QualityResponse::HESITATION_RESPONSE) }
+      end
+
+      it 'let you repeat the card to a mathematical time' do
+        expect(flashcard.next_study_date).to be_within(10.days).of(Time.now)
+      end
+
+      it 'increases the repetition number by 1' do
+        expect(flashcard.repetition_number).to eq(3)
+      end
+    end
+
+    context 'when the response is correct, with HESITATION_RESPONSE(4), for the 4th time' do
+      before do
+        4.times { flashcard.update_spaced_repetition(QualityResponse::HESITATION_RESPONSE) }
+      end
+
+      it 'keeps the easiness factor the same, allowing for minor fluctuations' do
+        # stays more or less around 2.5
+        expect(flashcard.easiness_factor).to be_within(0.1).of(2.5)
+      end
+
+      it 'let you repeat the card to incremental time' do
+        expect(flashcard.next_study_date).to be_within(16.days).of(Time.now)
+      end
+
+      it 'increases the repetition number by 1' do
+        expect(flashcard.repetition_number).to eq(4)
+      end
+    end
+
+    context 'when the response is correct, with HESITATION_RESPONSE(2), for the 5th time' do
+      before do
+        5.times { flashcard.update_spaced_repetition(QualityResponse::HESITATION_RESPONSE) }
+      end
+
+      it 'keeps the easiness factor the same, allowing for minor fluctuations' do
+        # stays more or less around 2.5
+        expect(flashcard.easiness_factor).to be_within(0.1).of(2.5)
+      end
+
+      it 'the interval blocks will remain the same of the previous time , you will repeat every 16 days' do
+        expect(flashcard.next_study_date).to be_within(16.days).of(Time.now)
+      end
+
+      it 'increases the repetition number by 1' do
+        expect(flashcard.repetition_number).to eq(5)
+      end
+    end
+  end
+
+  # -------------- Spaced repetition when correct answers EASY_RESPONSE(5) --------------
+  # describe 'SpacedRepetition#update_spaced_repetition' do
+  #   context 'when the response is correct, with EASY_RESPONSE(5), for the first time' do
+  #     before { flashcard.update_spaced_repetition(QualityResponse::HESITATION_RESPONSE) }
+  #
+  #     it 'let you repeat the card 1 day later' do
+  #       expect(flashcard.next_study_date).to be_within(1.day).of(Time.now)
+  #     end
+  #
+  #     it 'increases the repetition number by 1' do
+  #       expect(flashcard.repetition_number).to eq(1)
+  #     end
+  #   end
+  #
+  #   context 'when the response is correct, with HESITATION_RESPONSE(2), for the second time' do
+  #     before do
+  #       2.times { flashcard.update_spaced_repetition(QualityResponse::HESITATION_RESPONSE) }
+  #     end
+  #
+  #     it 'let you repeat the card 4 days later' do
+  #       expect(flashcard.next_study_date).to be_within(4.days).of(Time.now)
+  #     end
+  #
+  #     it 'increases the repetition number by 1' do
+  #       expect(flashcard.repetition_number).to eq(2)
+  #     end
+  #   end
+  #
+  #   context 'when the response is correct, with serious difficulty, for the third time' do
+  #     before do
+  #       3.times { flashcard.update_spaced_repetition(QualityResponse::HESITATION_RESPONSE) }
+  #     end
+  #
+  #     it 'let you repeat the card to a mathematical time' do
+  #       expect(flashcard.next_study_date).to be_within(10.days).of(Time.now)
+  #     end
+  #
+  #     it 'increases the repetition number by 1' do
+  #       expect(flashcard.repetition_number).to eq(3)
+  #     end
+  #   end
+  #
+  #   context 'when the response is correct, with serious difficulty, for the 4th time' do
+  #     before do
+  #       4.times { flashcard.update_spaced_repetition(QualityResponse::HESITATION_RESPONSE) }
+  #     end
+  #
+  #     it 'keeps the easiness factor the same, allowing for minor fluctuations' do
+  #       # stays more or less around 2.5
+  #       expect(flashcard.easiness_factor).to be_within(0.1).of(2.5)
+  #     end
+  #
+  #     it 'let you repeat the card to incremental time' do
+  #       expect(flashcard.next_study_date).to be_within(16.days).of(Time.now)
+  #     end
+  #
+  #     it 'increases the repetition number by 1' do
+  #       expect(flashcard.repetition_number).to eq(4)
+  #     end
+  #   end
+  #
+  #   context 'when the response is correct, with HESITATION_RESPONSE(2), for the 5th time' do
+  #     before do
+  #       5.times { flashcard.update_spaced_repetition(QualityResponse::HESITATION_RESPONSE) }
+  #     end
+  #
+  #     it 'keeps the easiness factor the same, allowing for minor fluctuations' do
+  #       # stays more or less around 2.5
+  #       expect(flashcard.easiness_factor).to be_within(0.1).of(2.5)
+  #     end
+  #
+  #     it 'the interval blocks will remain the same of the previos time , you will repeat every 16 days' do
+  #       expect(flashcard.next_study_date).to be_within(16.days).of(Time.now)
+  #     end
+  #
+  #     it 'increases the repetition number by 1' do
+  #       expect(flashcard.repetition_number).to eq(5)
+  #     end
+  #   end
+  # end
+
+
+
+
+
+  # context 'when the easiness factor reaches the minimum threshold' do
+  #   # Test to ensure the easiness factor does not drop below the minimum threshold
+  # end
+  #
+  # context 'when incorrect responses follow correct responses' do
+  #   # Test for the effect of a mix of correct and incorrect responses on the easiness factor and interval
+  # end
 end
