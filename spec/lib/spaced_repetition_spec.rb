@@ -17,7 +17,7 @@ RSpec.describe SpacedRepetition do
   before do
     flashcard.init_spaced_repetition
   end
-
+  # -------------- Init spaced repetition  --------------
   describe 'SpacedRepetition#init_spaced_repetition' do
     it 'sets the easiness factor to 2.5' do
       expect(flashcard.easiness_factor).to eq(2.5)
@@ -50,8 +50,8 @@ RSpec.describe SpacedRepetition do
       end
     end
   end
-  # -------------- Spaced repetition when incorrect  INCORRECT_HARD_RESPONSE(1) --------------
 
+  # -------------- Spaced repetition when incorrect  INCORRECT_HARD_RESPONSE(1) --------------
   describe 'SpacedRepetition#update_spaced_repetition' do
     context 'when the quality response is incorrect and hard' do
       before { flashcard.update_spaced_repetition(QualityResponse::INCORRECT_HARD_RESPONSE) }
@@ -64,8 +64,8 @@ RSpec.describe SpacedRepetition do
       end
     end
   end
-  # -------------- Spaced repetition when incorrect  INCORRECT_EASY_RESPONSE(5) --------------
 
+  # -------------- Spaced repetition when incorrect  INCORRECT_EASY_RESPONSE(5) --------------
   describe 'SpacedRepetition#update_spaced_repetition' do
     context 'when the quality response is incorrect but seemed easy after review' do
       before { flashcard.update_spaced_repetition(QualityResponse::INCORRECT_EASY_RESPONSE) }
