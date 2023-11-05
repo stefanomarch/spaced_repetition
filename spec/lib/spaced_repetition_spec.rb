@@ -36,7 +36,6 @@ RSpec.describe SpacedRepetition do
     end
   end
 
-
   # -------------- Spaced repetition when incorrect  BLACKOUT_RESPONSE(0) --------------
   describe 'SpacedRepetition#update_spaced_repetition when easiness factor is blackout' do
     context 'when the quality response is a complete blackout, it means that is the molst difficult' do
@@ -327,16 +326,4 @@ RSpec.describe SpacedRepetition do
       end
     end
   end
-
-
-
-
-
-  # context 'when the easiness factor reaches the minimum threshold' do
-  #   # Test to ensure the easiness factor does not drop below the minimum threshold
-  # end
-  #
-  # context 'when incorrect responses follow correct responses' do
-  #   # Test for the effect of a mix of correct and incorrect responses on the easiness factor and interval
-  # end
 end

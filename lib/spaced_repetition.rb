@@ -3,7 +3,6 @@
 require_relative 'spaced_repetition/version'
 require_relative 'quality_response'
 require 'active_support/core_ext/numeric/time'
-require 'byebug'
 
 # Documentation for SpacedRepetition Module
 # This module implements a spaced repetition algorithm that can be included in any class
