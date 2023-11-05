@@ -26,7 +26,7 @@ This detailed documentation covers the implementation of a spaced repetition alg
 ### Interval Calculation
 
 - **First Review**: Fixed at one day after the initial learning session.
-- **Second Review**: Set to a longer fixed interval, typically six days.
+- **Second Review**: Set to a longer fixed interval, typically 4 days.
 - **Subsequent Reviews**: Multiplied by the EF to progressively extend the interval between reviews.
 
 ### Quick Review Scheduling
