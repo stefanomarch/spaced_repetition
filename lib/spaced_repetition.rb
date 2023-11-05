@@ -3,7 +3,6 @@
 require_relative 'spaced_repetition/version'
 require_relative 'quality_response'
 require 'active_support/core_ext/numeric/time'
-require 'byebug'
 
 # Documentation for SpacedRepetition Module
 # This module implements a spaced repetition algorithm that can be included in any class
@@ -58,7 +57,7 @@ module SpacedRepetition
           schedule_quick_review(quality_response)
         else
           # Adjust intervals and factor for good recall quality.
-          adjust_schedule_for_successful_review(quality_response)
+          schedule_for_successful_review(quality_response)
         end
 
         # Update the next study date based on new interval.
@@ -81,7 +80,7 @@ module SpacedRepetition
       end
 
       # Adjusts the learning schedule based on successful recall.
-      def adjust_schedule_for_successful_review(quality_response)
+      def schedule_for_successful_review(quality_response)
         self.easiness_factor = [calculate_new_easiness_factor(quality_response), MINIMUM_EFACTOR].max # Ensure the e-factor is not below the minimum.
         self.interval = calculate_new_interval # Calculate and set the new interval.
         self.repetition_number += 1 # Increment the count of review sessions.
@@ -96,7 +95,6 @@ module SpacedRepetition
       def calculate_new_interval
         case self.repetition_number
         when 0 then FIRST_REPETITION_INTERVAL_DAYS
-        when 1 then SECOND_REPETITION_INTERVAL_DAYS
         else
           if self.interval <= 4
             (self.interval * self.easiness_factor).round
