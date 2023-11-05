@@ -1,43 +1,79 @@
-# Spaced Repetition Algorithm Documentation
+# Documentation of Spaced Repetition Algorithm
 
-This document explains the underlying algorithm used in the SpacedRepetition module for Ruby. The algorithm is designed to optimize learning by calculating the best time intervals for review based on user performance.
+## Introduction
 
-## Overview
+This detailed documentation covers the implementation of a spaced repetition algorithm within a Ruby module. The goal of spaced repetition is to enhance memory retention by using increasing intervals of time between reviews of the studied material, based on the cognitive science principle that our brains learn more efficiently when repetition is spread out over time.
 
-Spaced repetition leverages the psychological spacing effect to enhance efficiency in learning. The algorithm determines the optimal interval for reviewing information to ensure that the memory trace remains strong and that recall likelihood increases over time.
+## Components of the Algorithm
 
-## Easiness Factor
+### Easiness Factor (EF)
 
-The easiness factor (EF) plays a crucial role in determining the intervals between reviews. It starts at 2.5 by default and adjusts after every recall attempt as follows:
+- **Role**: Modifies the gap between study sessions to tailor to the individual's performance.
+- **Initial Value**: Traditionally set at 2.5 for new items.
+- **Adjustment**: Decreases with each difficult recall, increases with easier recalls to a smaller degree, never falling below a minimum value to prevent intervals from becoming too short.
+
+### Quality Response
+
+- **Definition**: A numeric score that reflects the quality of recall, ranging from 0 (complete blackout) to 5 (perfect recall).
+- **Usage**: Determines adjustments to the EF and the interval length for the next review.
+
+### Repetition Number
+
+- **Role**: Tracks the number of successful reviews for an item.
+- **Reset Condition**: Resets to zero after a poor recall requiring a quick review.
+- **Incrementation**: Increases by one after each successful review.
+
+### Interval Calculation
+
+- **First Review**: Fixed at one day after the initial learning session.
+- **Second Review**: Set to a longer fixed interval, typically six days.
+- **Subsequent Reviews**: Multiplied by the EF to progressively extend the interval between reviews.
+
+### Quick Review Scheduling
+
+- **For Incorrect Easy Responses**: Scheduled one hour after the initial attempt.
+- **For Other Poor Recalls**: Scheduled five minutes after the attempt.
+
+## Algorithm Pseudocode
 
 ```ruby
-new_ef = old_ef - 0.8 + (0.28 * quality_response) - (0.02 * quality_response**2)
-new_ef = [new_ef, MINIMUM_EFACTOR].max
-```
+def init_spaced_repetition(e_factor: default_ef, interval: default_interval, repetition_num: default_repetition)
+  @easiness_factor, @interval, @repetition_number = e_factor, interval, repetition_num
+  @next_study_date = current_time + interval
+end
 
-Where quality_response is a score from 0 to 5 indicating the quality of recall.
+def update_spaced_repetition(quality_response)
+  if quality_response < threshold_difficult_response
+    schedule_quick_review(quality_response)
+  else
+    adjust_schedule_for_successful_review(quality_response)
+  end
+  @next_study_date = current_time + @interval
+end
 
-## Interval Calculation
-The intervals are calculated differently depending on the number of times an item has been reviewed (repetition_number):
+private
 
-First Repetition: 1 day
-Second Repetition: 4 days
-Subsequent Repetitions: previous_interval * EF
-The repetition number is increased by one after each recall, except when the recall is poor, in which case the repetition number is reset to zero, and the item is scheduled for quick review.
+def schedule_quick_review(quality_response)
+  reset_repetition_number
+  calculate_quick_review_interval(quality_response)
+end
 
-## Quick Reviews
-Quick reviews are scheduled in cases of poor recall quality, with the following rules applied:
+def adjust_schedule_for_successful_review(quality_response)
+  calculate_new_easiness_factor(quality_response)
+  calculate_new_interval
+  increment_repetition_number
+end
 
-If the response is incorrect but the user found it easy, the next review is scheduled in 1 hour.
-For other poor recalls, the review is scheduled in 5 minutes.
-## Stopping Condition
-To prevent intervals from becoming counterproductively long, a stopping condition is implemented. If the interval calculated exceeds a threshold (e.g., 4 days), the interval stops increasing regardless of the EF, and the current interval is maintained for subsequent reviews.
+def calculate_new_easiness_factor(quality_response)
+  # EF formula here, ensuring it doesn't go below the minimum value
+end
 
-## Implementation in Ruby
-The algorithm is implemented within a module to be included in Ruby classes that represent items to be learned. It relies on ActiveSupport's time extensions for interval calculation and rounds intervals to the nearest day.
+def calculate_new_interval
+  if @repetition_number == 0 then return first_interval
+  if @repetition_number == 1 then return second_interval
+  increase_interval_based_on_ef
+end
 
-The module provides init_spaced_repetition to initialize repetition data and update_spaced_repetition to update these based on user performance.
-
-## Conclusion
-This algorithm is a Ruby-centric implementation of the widely researched spaced repetition model for learning. It can be integrated into any study tool or application to help users learn more effectively by spacing their review of material according to their personal recall abilities and performance history.
-
+def increase_interval_based_on_ef
+  # Interval increase logic with maximum cap if needed
+end
