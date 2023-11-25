@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     spaced_repetition (0.1.0)
-      activerecord (>= 5.0, < 8.0)
+      activerecord
       activesupport
 
 GEM
