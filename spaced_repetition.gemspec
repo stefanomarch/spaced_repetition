@@ -29,5 +29,5 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'activesupport', '6.1.4'
 
   # Specify the gem's dependencies here
-  spec.add_dependency 'activerecord', '>= 5.0', '< 7.0'
+  spec.add_dependency 'activerecord', '>= 5.0', '< 8.0'
 end
