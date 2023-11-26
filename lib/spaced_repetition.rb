@@ -43,6 +43,7 @@ module SpacedRepetition
         self.interval = interval # 'interval' is the gap (in days) before the next review.
         self.repetition_number = repetition_num # 'repetition number' is how many times the item has been reviewed.
         self.next_study_date = Time.now + self.interval.days # 'next study date' is when the item should next be reviewed.
+        self
       end
 
       # Updates the spaced repetition attributes based on the quality of the response.
