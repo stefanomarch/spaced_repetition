@@ -33,9 +33,9 @@ module SpacedRepetition
 
   def self.included(base)
     base.class_eval do
-      # unless method_defined?(:easiness_factor)
-      #   attr_accessor :easiness_factor, :interval, :repetition_number, :next_study_date
-      # end
+      unless method_defined?(:easiness_factor)
+        attr_accessor :easiness_factor, :interval, :repetition_number, :next_study_date
+      end
 
       # Initializes the object for spaced repetition with default or specified values.
       def init_spaced_repetition(e_factor: 2.5, interval: FIRST_REPETITION_INTERVAL_DAYS, repetition_num: 0)
